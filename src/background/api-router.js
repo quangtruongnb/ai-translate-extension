@@ -1,6 +1,6 @@
-import { PROVIDER_TYPES } from '../../shared/constants.js';
-import { getActiveProvider, getPromptTemplates } from '../../shared/storage.js';
-import { getLanguageByCode } from '../../shared/languages.js';
+import { PROVIDER_TYPES } from '../shared/constants.js';
+import { getActiveProvider, getPromptTemplates } from '../shared/storage.js';
+import { getLanguageByCode } from '../shared/languages.js';
 import { OpenAIProvider } from './providers/openai-provider.js';
 import { AnthropicProvider } from './providers/anthropic-provider.js';
 
