@@ -1,0 +1,20 @@
+{
+  "name": "ai-translate",
+  "version": "1.0.0",
+  "description": "AI-powered browser extension for text translation using OpenAI-compatible and Anthropic Claude APIs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "generate-icons": "node scripts/generate-icons.js"
+  },
+  "keywords": ["browser-extension", "translation", "ai", "openai", "claude"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.4.0",
+    "sharp": "^0.34.5",
+    "vite": "^8.0.12",
+    "webextension-polyfill": "^0.12.0"
+  }
+}
