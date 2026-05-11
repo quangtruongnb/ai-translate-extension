@@ -8,9 +8,71 @@
 </head>
 <body>
   <div id="app">
-    <h1>AI Translate</h1>
-    <p>Loading...</p>
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <span class="logo">🌐</span>
+        <div class="header-text">
+          <span class="title">AI Translate</span>
+        </div>
+      </div>
+      <div class="toggle-wrap">
+        <span class="toggle-label" id="toggle-label">ON</span>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-enabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Active Provider -->
+    <div class="section">
+      <div class="section-label">Active Provider</div>
+      <div class="provider-select" id="provider-select">
+        <div class="provider-current" id="provider-current">
+          <span class="provider-dot"></span>
+          <div class="provider-info">
+            <span class="provider-name" id="provider-name">No provider</span>
+            <span class="provider-model" id="provider-model">Not configured</span>
+          </div>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+        <div class="provider-dropdown" id="provider-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Target Language -->
+    <div class="section">
+      <div class="section-label">Translate To</div>
+      <div class="lang-select" id="lang-select">
+        <div class="lang-current" id="lang-current">
+          <span class="lang-flag" id="lang-flag">🇻🇳</span>
+          <span class="lang-name" id="lang-name">Vietnamese</span>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+        <div class="lang-dropdown" id="lang-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a href="#" class="footer-link" id="link-history">📜 History</a>
+      <a href="#" class="footer-link" id="link-settings">⚙️ Settings</a>
+    </div>
   </div>
+
   <script type="module" src="popup.js"></script>
 </body>
 </html>
