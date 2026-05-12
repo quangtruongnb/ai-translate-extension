@@ -158,6 +158,8 @@ function getStyles() {
       color: #dfe6e9;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
       max-width: 420px;
       min-width: 200px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -215,7 +217,9 @@ function getStyles() {
     }
 
     .ait-tooltip-content {
+      min-height: 0;
       padding: 12px 14px;
+      overflow-y: auto;
     }
 
     .ait-tooltip-result {

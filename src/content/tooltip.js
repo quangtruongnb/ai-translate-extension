@@ -9,6 +9,7 @@ export function createTooltip(shadowRoot) {
   let tooltipEl = null;
   let resultEl = null;
   let dismissCallback = null;
+  let anchorRect = null;
 
   /**
    * Remove the tooltip from the DOM.
@@ -19,6 +20,7 @@ export function createTooltip(shadowRoot) {
     }
     tooltipEl = null;
     resultEl = null;
+    anchorRect = null;
     if (dismissCallback) dismissCallback();
   }
 
@@ -29,22 +31,26 @@ export function createTooltip(shadowRoot) {
   function positionTooltip(rect) {
     if (!tooltipEl) return;
 
+    anchorRect = rect;
     tooltipEl.style.position = 'fixed';
-    tooltipEl.style.left = `${rect.left}px`;
-    tooltipEl.style.top = `${rect.bottom + 8}px`;
     tooltipEl.style.zIndex = '2147483647';
 
-    // Adjust if tooltip would go off-screen right
     requestAnimationFrame(() => {
-      if (!tooltipEl) return;
+      if (!tooltipEl || !resultEl || !anchorRect) return;
       const tooltipRect = tooltipEl.getBoundingClientRect();
-      if (tooltipRect.right > window.innerWidth - 10) {
-        tooltipEl.style.left = `${window.innerWidth - tooltipRect.width - 10}px`;
-      }
-      // Adjust if tooltip would go off-screen bottom
-      if (tooltipRect.bottom > window.innerHeight - 10) {
-        tooltipEl.style.top = `${rect.top - tooltipRect.height - 8}px`;
-      }
+      const headerHeight = tooltipEl.querySelector('.ait-tooltip-header')?.getBoundingClientRect().height || 0;
+      const layout = computeTooltipLayout(
+        anchorRect,
+        tooltipRect,
+        { width: window.innerWidth, height: window.innerHeight },
+        headerHeight
+      );
+
+      tooltipEl.style.left = `${layout.left}px`;
+      tooltipEl.style.top = `${layout.top}px`;
+      tooltipEl.style.width = `${layout.width}px`;
+      tooltipEl.style.maxHeight = `${layout.maxHeight}px`;
+      resultEl.style.maxHeight = `${layout.contentMaxHeight}px`;
     });
   }
 
@@ -119,6 +125,7 @@ export function createTooltip(shadowRoot) {
         <span>Translating...</span>
       </div>
     `;
+    positionTooltip(rect);
   }
 
   /**
@@ -145,6 +152,8 @@ export function createTooltip(shadowRoot) {
     } else {
       resultEl.textContent += chunk;
     }
+
+    if (anchorRect) positionTooltip(anchorRect);
   }
 
   /**
@@ -157,6 +166,7 @@ export function createTooltip(shadowRoot) {
 
     resultEl.textContent = fullText.trim();
     resultEl.classList.add('ait-tooltip-result');
+    if (anchorRect) positionTooltip(anchorRect);
 
     // Add copy button to actions
     const actions = tooltipEl.querySelector('.ait-tooltip-actions');
@@ -206,6 +216,8 @@ export function createTooltip(shadowRoot) {
       });
       resultEl.appendChild(retryBtn);
     }
+
+    if (anchorRect) positionTooltip(anchorRect);
   }
 
   /**
@@ -224,4 +236,43 @@ export function createTooltip(shadowRoot) {
     dismiss,
     onDismiss,
   };
+}
+
+/**
+ * Compute viewport-safe tooltip geometry after content has rendered.
+ *
+ * @param {{ left: number, top: number, bottom: number }} rect
+ * @param {{ width: number, height: number }} tooltipRect
+ * @param {{ width: number, height: number }} viewport
+ * @param {number} headerHeight
+ * @returns {{ left: number, top: number, width: number, maxHeight: number, contentMaxHeight: number }}
+ */
+export function computeTooltipLayout(rect, tooltipRect, viewport, headerHeight) {
+  const viewportPadding = 10;
+  const gap = 8;
+  const minWidth = 200;
+  const maxViewportWidth = Math.max(0, viewport.width - viewportPadding * 2);
+  const preferredWidth = rect.width || tooltipRect.width || minWidth;
+  const width = Math.min(Math.max(preferredWidth, minWidth), maxViewportWidth);
+  const maxHeight = Math.max(0, viewport.height - viewportPadding * 2);
+  const constrainedHeight = Math.min(tooltipRect.height, maxHeight);
+  const belowTop = rect.bottom + gap;
+  const aboveTop = rect.top - constrainedHeight - gap;
+  const canFitBelow = belowTop + constrainedHeight <= viewport.height - viewportPadding;
+  const canFitAbove = aboveTop >= viewportPadding;
+
+  let top = belowTop;
+  if (!canFitBelow && canFitAbove) {
+    top = aboveTop;
+  } else if (!canFitBelow) {
+    top = viewportPadding;
+  }
+
+  const rectRight = rect.right ?? rect.left + preferredWidth;
+  const preferredLeft = rectRight - width;
+  const maxLeft = Math.max(viewportPadding, viewport.width - width - viewportPadding);
+  const left = Math.min(Math.max(preferredLeft, viewportPadding), maxLeft);
+  const contentMaxHeight = Math.max(0, maxHeight - headerHeight);
+
+  return { left, top, width, maxHeight, contentMaxHeight };
 }
