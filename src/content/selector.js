@@ -7,7 +7,7 @@ import { debounce } from '../shared/utils.js';
  *   Called with { text: string, rect: DOMRect }
  * @param {number} selectionDelay - Debounce delay in ms before showing icon
  */
-export function initSelector(shadowRoot, onTranslateRequest, selectionDelay = 300) {
+export function initSelector(container, onTranslateRequest, selectionDelay = 300) {
   let iconEl = null;
   let currentSelection = null;
 
@@ -20,7 +20,9 @@ export function initSelector(shadowRoot, onTranslateRequest, selectionDelay = 30
     icon.innerHTML = '🌐';
     icon.title = 'Click to translate';
 
-    icon.addEventListener('click', (e) => {
+    // Using mousedown instead of click to prevent the document mousedown handler
+    // from removing the icon before the click event fires.
+    icon.addEventListener('mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (currentSelection) {
@@ -42,7 +44,7 @@ export function initSelector(shadowRoot, onTranslateRequest, selectionDelay = 30
     removeIcon();
 
     iconEl = createIcon();
-    shadowRoot.appendChild(iconEl);
+    container.appendChild(iconEl);
 
     // Position near top-right of selection
     const scrollX = window.scrollX;
@@ -86,7 +88,8 @@ export function initSelector(shadowRoot, onTranslateRequest, selectionDelay = 30
 
     // Don't trigger on selections within our own shadow DOM
     const anchorNode = selection.anchorNode;
-    if (anchorNode && shadowRoot.contains(anchorNode)) {
+    const host = container.getRootNode().host;
+    if (anchorNode && (container.contains(anchorNode) || anchorNode === host || host.contains(anchorNode))) {
       return;
     }
 
@@ -114,10 +117,11 @@ export function initSelector(shadowRoot, onTranslateRequest, selectionDelay = 30
   // Dismiss on click outside
   document.addEventListener('mousedown', (e) => {
     // Don't dismiss if clicking on our icon or tooltip
-    if (e.target && shadowRoot.contains(e.target)) return;
+    if (e.target && container.contains(e.target)) return;
 
     const path = e.composedPath();
-    if (path.some((el) => el === shadowRoot.host)) return;
+    const host = container.getRootNode().host;
+    if (path.some((el) => el === host)) return;
 
     removeIcon();
   });

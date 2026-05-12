@@ -136,7 +136,15 @@ export function createTooltip(shadowRoot) {
       resultEl.classList.add('ait-tooltip-result');
     }
 
-    resultEl.textContent += chunk;
+    // Trim leading whitespace across multiple initial chunks
+    if (resultEl.textContent.length === 0) {
+      const trimmed = chunk.trimStart();
+      if (trimmed) {
+        resultEl.textContent = trimmed;
+      }
+    } else {
+      resultEl.textContent += chunk;
+    }
   }
 
   /**
@@ -147,7 +155,7 @@ export function createTooltip(shadowRoot) {
   function showResult(fullText) {
     if (!resultEl) return;
 
-    resultEl.textContent = fullText;
+    resultEl.textContent = fullText.trim();
     resultEl.classList.add('ait-tooltip-result');
 
     // Add copy button to actions

@@ -6,15 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "generate-icons": "node scripts/generate-icons.js"
+    "generate-icons": "node scripts/generate-icons.js",
+    "package": "npm run build && node scripts/fix-firefox-manifest.js && web-ext build --source-dir dist --artifacts-dir packages --overwrite-dest",
+    "start:firefox": "npm run build && node scripts/fix-firefox-manifest.js && web-ext run --source-dir dist"
   },
-  "keywords": ["browser-extension", "translation", "ai", "openai", "claude"],
+  "keywords": [
+    "browser-extension",
+    "translation",
+    "ai",
+    "openai",
+    "claude"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.4.0",
     "sharp": "^0.34.5",
     "vite": "^8.0.12",
+    "web-ext": "^10.1.0",
     "webextension-polyfill": "^0.12.0"
   }
 }
